@@ -1,20 +1,12 @@
-import React, {Component} from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  View,
-  Animated
-} from 'react-native';
+import React, { PureComponent } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import Confetti from "./confetti.js";
+import Confetti from './confetti.js';
 
-class ConfettiView extends Component {
-  constructor(props) {
-      super(props);
-      this.state = {confettis: []};
-      this.confettiIndex = 0;
-      this.shouldStop = false;
-  }
+class ConfettiView extends PureComponent {
+  state = { confettis: [] };
+  confettiIndex = 0;
+  shouldStop = false;
 
   componentDidMount() {
     if (this.props.startOnLoad) {
@@ -26,65 +18,77 @@ class ConfettiView extends Component {
     this.stopConfetti();
   }
 
-  startConfetti(onComplete) {
-       let {confettis} = this.state;
-       let {confettiCount, timeout, untilStopped} = this.props;
-       this.shouldStop = false;
-       if(untilStopped || this.confettiIndex < confettiCount) {
-         setTimeout(() => {
-           if (this.shouldStop) {
-             return;
-           } else {
-             confettis.push({key: this.confettiIndex});
-             this.confettiIndex++;
-             onComplete && this.setState({onComplete});
-             this.setState({confettis});
-             this.startConfetti();
-           }
-         }, timeout);
-       }
-  }
+  startConfetti = onComplete => {
+    let { confettis } = this.state;
+    let { confettiCount, timeout, untilStopped } = this.props;
+    this.shouldStop = false;
+    if (untilStopped || this.confettiIndex < confettiCount) {
+      setTimeout(() => {
+        if (this.shouldStop) {
+          return;
+        } else {
+          confettis.push({ key: this.confettiIndex });
+          this.confettiIndex++;
+          onComplete && this.setState({ onComplete });
+          this.setState({ confettis });
+          this.startConfetti();
+        }
+      }, timeout);
+    }
+  };
 
-  removeConfetti(key) {
-       let {confettis, onComplete} = this.state;
-       let {confettiCount} = this.props;
-       let index = confettis.findIndex(confetti => {return confetti.key === key});
-       confettis.splice(index, 1);
-       this.setState({confettis});
-       if(key === confettiCount - 1) {
-         this.confettiIndex = 0;
-       }
-       if(confettis.length === 0 && onComplete && typeof onComplete === 'function') {
-         onComplete();        
-       }
-  }
+  removeConfetti = key => {
+    let { confettis, onComplete } = this.state;
+    let { confettiCount } = this.props;
+    let index = confettis.findIndex(confetti => {
+      return confetti.key === key;
+    });
+    confettis.splice(index, 1);
+    this.setState({ confettis });
+    if (key === confettiCount - 1) {
+      this.confettiIndex = 0;
+    }
+    if (confettis.length === 0 && onComplete && typeof onComplete === 'function') {
+      onComplete();
+    }
+  };
 
-  stopConfetti() {
+  stopConfetti = () => {
     this.shouldStop = true;
     this.confettiIndex = 0;
     const { onComplete } = this.state;
-    if(onComplete && typeof onComplete === 'function') {
-      onComplete();        
+    if (onComplete && typeof onComplete === 'function') {
+      onComplete();
     }
     this.setState({ confettis: [], onComplete: null });
-  }
+  };
 
   render() {
-       let {confettis} = this.state;
-       let {...otherProps} = this.props
-       return <View style={styles.container}>
-         {confettis.map(confetti => {
-             return <Confetti key={confetti.key} index={confetti.key} onAnimationComplete={this.removeConfetti.bind(this, confetti.key)} colors={this.props.colors} {...otherProps}/>
-         })}
-       </View>
+    let { confettis } = this.state;
+    let { ...otherProps } = this.props;
+    return (
+      <View style={styles.container}>
+        {confettis.map(confetti => {
+          return (
+            <Confetti
+              key={confetti.key}
+              index={confetti.key}
+              onAnimationComplete={this.removeConfetti.bind(this, confetti.key)}
+              colors={this.props.colors}
+              {...otherProps}
+            />
+          );
+        })}
+      </View>
+    );
   }
 }
 
 ConfettiView.defaultProps = {
-   confettiCount: 100,
-   timeout: 30,
-   untilStopped: false
-}
+  confettiCount: 100,
+  timeout: 30,
+  untilStopped: false
+};
 
 const styles = StyleSheet.create({
   container: {
