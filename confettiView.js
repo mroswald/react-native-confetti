@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import Confetti from './confetti.js';
 
-class ConfettiView extends PureComponent {
+class ConfettiView extends Component {
   state = { confettis: [] };
   confettiIndex = 0;
   shouldStop = false;
